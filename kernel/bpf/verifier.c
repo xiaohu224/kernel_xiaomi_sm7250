@@ -2706,11 +2706,10 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
 	 */
 	case BPF_MAP_TYPE_DEVMAP:
 	case BPF_MAP_TYPE_DEVMAP_HASH:
-case BPF_MAP_TYPE_DEVMAP:
-case BPF_MAP_TYPE_DEVMAP_HASH:
-    if (func_id != BPF_FUNC_redirect_map)
-        goto error;
-    break;
+		if (func_id != BPF_FUNC_redirect_map &&
+		    func_id != BPF_FUNC_map_lookup_elem)
+			goto error;
+		break;
 
 			goto error;
 		break;
