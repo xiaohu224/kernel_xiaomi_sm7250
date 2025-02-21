@@ -568,6 +568,8 @@ static int dev_map_delete_elem(struct bpf_map *map, void *key)
 	return 0;
 }
 
+
+	spin_lock_irqsave(&dtab->index_lock, flags);
 static int dev_map_hash_delete_elem(struct bpf_map *map, void *key)
 {
 	struct bpf_dtab *dtab = container_of(map, struct bpf_dtab, map);
@@ -585,31 +587,10 @@ static int dev_map_hash_delete_elem(struct bpf_map *map, void *key)
 		ret = 0;
 	}
 	spin_unlock_irqrestore(&dtab->index_lock, flags);
+
 	return ret;
 }
 
-static struct bpf_dtab_netdev *__dev_map_alloc_node(struct net *net,
-						    struct bpf_dtab *dtab,
-						    u32 ifindex,
-						    unsigned int idx)
-{
-	gfp_t gfp = GFP_ATOMIC | __GFP_NOWARN;
-	struct bpf_dtab_netdev *dev;
-
-	dev = kmalloc_node(sizeof(*dev), gfp, dtab->map.numa_node);
-	if (!dev)
-		return ERR_PTR(-ENOMEM);
-
-	dev->dev = dev_get_by_index(net, ifindex);
-	if (!dev->dev) {
-		kfree(dev);
-		return ERR_PTR(-EINVAL);
-	}
-
-	dev->bit = idx;
-	dev->dtab = dtab;
-	return dev;
-}
 
 static struct bpf_dtab_netdev *__dev_map_alloc_node(struct net *net,
 						    struct bpf_dtab *dtab,
