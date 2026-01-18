@@ -38,7 +38,6 @@ DEFCONFIG=monet_defconfig
 else if [ "${DEVICE}" = "vangogh" ]; then
 DEFCONFIG=vangogh_defconfig
 fi
-fi
 
 #
 # Enviromental Variables
